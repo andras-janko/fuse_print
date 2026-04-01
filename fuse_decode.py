@@ -167,8 +167,7 @@ def decode_fuses(mcu_name, file_path):
     configs = get_mcu_configs()
     mcu = mcu_name.lower()
 
-    if mcu == "attiny44" or mcu == "attiny2313": mcu_map = configs["attiny45"]
-    elif mcu in configs: mcu_map = configs[mcu]
+    if mcu in configs: mcu_map = configs[mcu]
     else:
         print(f"{RED}Error: '{mcu}' not supported.{ENDC}"); return
 
