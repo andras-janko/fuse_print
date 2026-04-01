@@ -63,10 +63,10 @@ def get_mcu_configs():
                 "EXT_RES_3_7": (0xF8, 3, "RES", "Reserved bits")
             }}
         ],
-        "atmega324p": [
+        "atmega328p": [
             {"name": "LOW", "bits": {
-                "CKSEL": (0x0F, 0, {0: "Ext Clk", 2: "Int RC 8MHz", 6: "Full Swing"}, "Clock Source Selection"),
-                "SUT": (0x30, 4, {3: "64ms"}, "Select Start-up Time"),
+                "CKSEL": (0x0F, 0, {2: "Int RC 8MHz", 15: "Ext Crystal"}, "Clock Source Selection"),
+                "SUT": (0x30, 4, {2: "64ms"}, "Select Start-up Time"),
                 "CKOUT": (0x40, 6, {0: "Enabled", 1: "Disabled"}, "Clock Output"),
                 "CKDIV8": (0x80, 7, {0: "Enabled", 1: "Disabled"}, "Divide Clock by 8")
             }},
@@ -76,10 +76,11 @@ def get_mcu_configs():
                 "EESAVE": (0x08, 3, {0: "Preserved", 1: "Not Preserved"}, "EEPROM Preserve during Chip Erase"),
                 "WDTON": (0x10, 4, {0: "Always On", 1: "Software Ctrl"}, "Watchdog Timer Always On"),
                 "SPIEN": (0x20, 5, {0: "Enabled", 1: "Disabled"}, "Enable Serial Download"),
-                "JTAGEN": (0x40, 6, {0: "Enabled", 1: "Disabled"}, "Enable JTAG Interface")
+                "DWEN": (0x40, 6, {0: "Enabled", 1: "Disabled"}, "Enable debugWIRE"),
+                "RSTDISBL": (0x80, 7, {0: "Reset Disabled", 1: "Reset Enabled"}, "External Reset Disable")
             }},
             {"name": "EXTENDED", "bits": {
-                "BODLEVEL": (0x07, 0, {7: "Disabled", 4: "4.3V"}, "Brown-out Detector Level"),
+                "BODLEVEL": (0x07, 0, {7: "Disabled", 6: "1.8V", 5: "2.7V", 4: "4.3V"}, "Brown-out Detector Level"),
                 "EXT_RES_3_7": (0xF8, 3, "RES", "Reserved bits")
             }}
         ],
@@ -191,7 +192,7 @@ def decode_fuses(mcu_name, file_path):
 
     log(f"\n{BOLD}{CYAN}AVR FUSE DECODER - {mcu.upper()}{ENDC}")
     log("=" * 135)
-    header = f"{BOLD}{'SHORT NAME':<15} | {'BITS':<8} | {'RAW BIN':<8} | {'SETTING':<25} | {'LONG DESCRIPTION'}{ENDC}"
+    header = f"{BOLD}{'SHORT NAME':<15} | {'BITS':<8} | {'RAW BIN':<12} | {'SETTING':<25} | {'LONG DESCRIPTION'}{ENDC}"
     log(header)
     log("-" * 135)
 
@@ -231,11 +232,11 @@ def decode_fuses(mcu_name, file_path):
 
             s_name = f"{short_name:<15}"
             b_range = f"{bit_range:<8}"
-            b_disp = f"{bin_display:<8}"
+            b_disp = f"{bin_display:<12}"
             setting_col = color_aware_ljust(res_text, 25)
 
             log(f"{s_name} | {b_range} | {b_disp} | {setting_col} | {long_desc}{warning}")
-            log(f"{' ': <15} | {' ': <8} | {' ': <8} | {' ': <25} | OTHER OPTIONS: {other_opts_str}", only_file=True)
+            log(f"{' ': <15} | {' ': <8} | {' ': <12} | {' ': <25} | OTHER OPTIONS: {other_opts_str}", only_file=True)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     log_filename = f"{mcu}_{timestamp}.txt"
@@ -257,7 +258,7 @@ if __name__ == "__main__":
         print(f"  {CYAN}atmega4809{ENDC}:")
         print("    1:WDTCFG, 2:BODCFG, 3:OSCCFG, 4:SYSCFG0, 5:SYSCFG1, 6:APPEND, 7:BOOTEND")
 
-        print(f"  {CYAN}atmega2560 / atmega324p{ENDC}:")
+        print(f"  {CYAN}atmega2560 / atmega328p{ENDC}:")
         print("    1:LOW byte, 2:HIGH byte, 3:EXTENDED byte")
 
         print(f"  {CYAN}attiny44 / attiny45 / attiny2313{ENDC}:")
